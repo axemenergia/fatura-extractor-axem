@@ -39,12 +39,13 @@ def normalize_kwh(raw: str) -> Optional[int]:
     s = re.sub(r"\D", "", s)
     return int(s) if s else None
 
-def normalize_brl(raw: str) -> Optional[str]:
+def normalize_brl(raw: str) -> Optional[float]:
     """
-    R$: retorna string numérica padrão banco (ponto decimal).
+    R$: retorna float.
     Ex:
-      "R$ 3.914,15" -> "3914.15"
-      "1.262,22"    -> "1262.22"
+      "R$ 3.914,15" -> 3914.15
+      "1.262,22"    -> 1262.22
+      "0,60"        -> 0.60
     """
     if not raw:
         return None
@@ -52,14 +53,12 @@ def normalize_brl(raw: str) -> Optional[str]:
     s = re.sub(r"[^0-9\.,]", "", s)
     if not s:
         return None
+    # remove separador de milhar e troca vírgula por ponto
     s = s.replace(".", "").replace(",", ".")
-    if "." not in s:
-        s += ".00"
-    else:
-        p1, p2 = s.split(".", 1)
-        p2 = (p2 + "00")[:2]
-        s = f"{p1}.{p2}"
-    return s
+    try:
+        return float(s)
+    except ValueError:
+        return None
 
 
 # -----------------------------
