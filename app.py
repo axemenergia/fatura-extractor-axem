@@ -105,6 +105,18 @@ if uploaded_files:
             fields["CHECK SALDO"] = "ERRO"
             fields["DIF (kWh)"] = None
 
+        # TARIFA FIO B = CUSTO TUSD FIO B (R$) / COMPENSADO (kWh)
+        try:
+            custo_fio_b = fields.get("CUSTO TUSD FIO B (R$)")
+            compensado_kwh = fields.get("COMPENSADO (kWh)")
+
+            if custo_fio_b is None or compensado_kwh in (None, 0):
+                fields["TARIFA FIO B (R$/kWh)"] = None
+            else:
+                fields["TARIFA FIO B (R$/kWh)"] = float(custo_fio_b) / float(compensado_kwh)
+        except:
+            fields["TARIFA FIO B (R$/kWh)"] = None
+
         rows.append(fields)
 
     df = pd.DataFrame(rows)
@@ -118,6 +130,7 @@ if uploaded_files:
         "LEITURA ANTERIOR",
         "LEITURA ATUAL",
         "CUSTO TUSD FIO B (R$)",
+        "TARIFA FIO B (R$/kWh)",
         "CONSUMO (kWh)",
         "SALDO ANTERIOR (kWh)",
         "INJETADO (kWh)",
